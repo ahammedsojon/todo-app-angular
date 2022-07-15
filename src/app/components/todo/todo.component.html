@@ -1,0 +1,40 @@
+<div class="todos">
+  <div class="container">
+    <h1 class="title">Todo App</h1>
+    <div class="add-todo d-flex">
+      <input type="text" class="form-control w-75" [(ngModel)]="todoParam.todo">
+      <button class="btn btn-primary" (click)="addTodo()">Add</button>
+    </div>
+    <div class="todo" *ngFor="let todo of todos; let index = index;">
+      <h4>{{todo}}</h4>
+      <div>
+        <button class="btn btn-primary btn-sm me-3" (click)="editTodo(todo, index)" data-bs-toggle="modal" data-bs-target="#TodoModal"><i class="fa-solid fa-pen"></i></button>
+        <button class="btn btn-danger btn-sm" (click)="deleteTodo(index)"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+
+    <div class="pending-todos d-flex align-items-center justify-content-between w-75 my-5" *ngIf="todos.length > 0">
+      <h3>You have {{todos.length}} pending tasks</h3>
+      <button class="btn btn-primary" (click)="clearTodos()">clear all</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="TodoModal" tabindex="-1" aria-labelledby="TodoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Todo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="string" class="form-control" [(ngModel)]="todoParam.todo">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveTodo()" data-bs-dismiss="modal">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
