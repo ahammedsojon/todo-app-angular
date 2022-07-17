@@ -1,42 +1,81 @@
 import { Component, OnInit } from '@angular/core';
+import { TodoService } from 'src/app/services/todo.service';
+import { Todo } from '../../Todo';
 
 @Component({
   selector: 'app-todo',
   templateUrl: './todo.component.html',
-  styleUrls: ['./todo.component.css']
+  styleUrls: ['./todo.component.css'],
 })
 export class TodoComponent implements OnInit {
-  todos:any = [];
-  todoParam:any = {
-    todo: '',
-    index: null
+  todos: Todo[] = [];
+
+  todoParam: any = {
+    todo: {
+      id: null,
+      text: '',
+      reminder: true,
+    },
   };
 
-  constructor() { }
+  constructor(private todoService: TodoService) {}
 
+  // get all todo
   ngOnInit(): void {
+    this.todoService.getTodos().subscribe((todos) => (this.todos = todos));
   }
 
+  // add new todo
   addTodo() {
-    this.todos.push(this.todoParam.todo);
-    this.todoParam.todo = '';
+    if (this.todoParam.todo.text === '') {
+      return alert('Please add a task!');
+    }
+    const newTodo = {
+      text: this.todoParam.todo.text,
+      reminder: this.todoParam.todo.reminder,
+    };
+    this.todoService
+      .addNewTodo(newTodo)
+      .subscribe((todo) => this.todos.push(todo));
+    this.todoParam = {
+      todo: {
+        text: '',
+        reminder: true,
+      },
+    };
   }
 
-  editTodo(todo:string, index:number){
+  // edit todo
+  editTodo(todo: Todo) {
     this.todoParam.todo = todo;
-    this.todoParam.index = index;
   }
 
-  saveTodo(){
-    this.todos[this.todoParam.index] = this.todoParam.todo;
-    this.todoParam.todo = '';
+  // save tdo
+  saveTodo(todo: Todo) {
+    this.todoService.updateTodoReminder(todo).subscribe();
+    this.todoParam.todo = {
+      text: '',
+      reminder: true,
+    };
   }
 
-  deleteTodo(index:number){
-    this.todos.splice(index, 1);
+  // delete
+  deleteTodo(todo: Todo) {
+    this.todoService
+      .deleteTodo(todo)
+      .subscribe(
+        () => (this.todos = this.todos.filter((t) => t.id !== todo.id))
+      );
   }
 
-  clearTodos(){
-    this.todos = [];
+  // clear all todo
+  clearTodos(): Todo[] {
+    const clear = this.todos.forEach((todo) => this.deleteTodo(todo));
+    return this.todos;
+  }
+
+  // set reminder from modal
+  onSetReminder(todo: Todo) {
+    todo.reminder = !todo.reminder;
   }
 }
